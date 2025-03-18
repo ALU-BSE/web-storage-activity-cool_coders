@@ -71,7 +71,7 @@ document.body.classList.add(savedTheme);
 
      **Code Skeleton:**  
 ```javascript
-// function removeOldestItem() {
+ function removeOldestItem() {
     let keys = Object.keys(localStorage);
     if (keys.length > 0) {
         localStorage.removeItem(keys[0]); // Remove the first stored item
