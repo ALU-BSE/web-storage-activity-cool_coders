@@ -25,12 +25,14 @@ document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
 
   - HttpOnly prevents JavaScript from accessing the cookie, reducing the risk of XSS (Cross-Site Scripting) attacks.
   - Secure ensures that the cookie is only sent over HTTPS, preventing transmission over unencrypted connections, which helps prevent man-in-the-middle attacks.
+  - Use of secure flag means that attackers using packet sniffing tools won’t be able to intercept Secure cookies on HTTPS connections. 
 
 - How do session cookies differ from persistent cookies in this context?
 
   - Session cookies are temporary and expire when the browser is closed. They are stored in memory rather than on disk.
   - Persistent cookies have an expiration date and remain stored on the user's device even after closing the browser, enabling long-term authentication and preferences retention.
-
+  - Session cookies have a lower risk of theft as they disappear on browser close, while persistent cookies can be stolen if improperly secured.
+  - Session cookies are best for authentication, while persistent cookies should not store authentication data.
 ---
 
 ### **Task 2: Theme Preferences with Local Storage**  
@@ -57,13 +59,26 @@ document.body.classList.add(savedTheme);
 
   - Browsers enforce a storage limit (typically 5-10MB per domain). If exceeded, setItem will fail, throwing a QuotaExceededError.
   - Handling:
-
      Use try...catch to catch errors when saving data.
 
      Optimize storage by compressing data or removing old/unused entries.
 
      Warn users if storage is near its limit.
 
+  - Clear Unused or Old Data
+   Manually delete old entries (e.g., using timestamps).
+   Use Least Recently Used (LRU) strategy to remove the oldest data first.
+     **Code Skeleton:**  
+```javascript
+// function removeOldestItem() {
+    let keys = Object.keys(localStorage);
+    if (keys.length > 0) {
+        localStorage.removeItem(keys[0]); // Remove the first stored item
+    }
+}
+```
+
+     
 ---
 
 ### **Task 3: Session-Specific Shopping Cart**  
@@ -89,6 +104,7 @@ sessionStorage.setItem("cart", JSON.stringify(cart));
   - This ensures that cart data is temporary and prevents stale data from being stored permanently when it’s no longer needed.
 
    - Session Storage is ideal because it persists only as long as the browser session is open, meaning the shopping cart resets when the browser is closed.
+   - The cart resets when the browser is closed, which is useful for temporary selections.
 
 ---
 
