@@ -7,6 +7,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     document.getElementById('loginSuccess').style.display = 'block';
 });
 
+
 // Delete cookie on logout
 document.getElementById('logoutButton').addEventListener('click', function() {
     document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
