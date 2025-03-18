@@ -68,6 +68,7 @@ document.body.classList.add(savedTheme);
   - Clear Unused or Old Data
    Manually delete old entries (e.g., using timestamps).
    Use Least Recently Used (LRU) strategy to remove the oldest data first.
+
      **Code Skeleton:**  
 ```javascript
 // function removeOldestItem() {
