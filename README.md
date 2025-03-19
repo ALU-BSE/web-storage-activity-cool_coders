@@ -13,6 +13,7 @@
   - HttpOnly prevents JavaScript from accessing the cookie, reducing the risk of XSS (Cross-Site Scripting) attacks.
   - Secure ensures that the cookie is only sent over HTTPS, preventing transmission over unencrypted connections, which helps prevent man-in-the-middle attacks.
   - Use of secure flag means that attackers using packet sniffing tools won’t be able to intercept Secure cookies on HTTPS connections. 
+  - HttpOnly prevents client-side access to cookies, reducing XSS risks, while Secure ensures cookies are sent only over HTTPS. Together, they enhance session security and user privacy.
 
 - How do session cookies differ from persistent cookies in this context?
 
@@ -20,6 +21,7 @@
   - Persistent cookies have an expiration date and remain stored on the user's device even after closing the browser, enabling long-term authentication and preferences retention.
   - Session cookies have a lower risk of theft as they disappear on browser close, while persistent cookies can be stolen if improperly secured.
   - Session cookies are best for authentication, while persistent cookies should not store authentication data.
+  - Session cookies exist only during a browsing session and are ideal for temporary data like login states. while Persistent cookies remain on the device after the session ends, enabling long-term tracking and preference storage.
 ---
 
 ### **Task 2: Theme Preferences with Local Storage**  
@@ -42,6 +44,7 @@
    Manually delete old entries (e.g., using timestamps).
    Use Least Recently Used (LRU) strategy to remove the oldest data first.
 
+  -Store only essential data by avoiding redundant or excessive information to prevent hitting the limit.
    
 ---
 
@@ -56,7 +59,7 @@
 
    - Session Storage is ideal because it persists only as long as the browser session is open, meaning the shopping cart resets when the browser is closed.
    - The cart resets when the browser is closed, which is useful for temporary selections.
-
+  - Prevents unnecessary data buildup, ensuring the cart remains relevant only during the active session.
 -
 
 ### **Task 4: Security Implementation**  
@@ -79,7 +82,9 @@
      - Use cookies for data that needs to be sent to the server automatically with every request, such as authentication tokens.
 
       - Use local storage for client-side data that doesn’t need to be sent with every request, like UI preferences.
-         
+    - Use cookies for data that requires expiration or secure flags, such as session identifiers or sensitive information, ensuring better control over its lifespan and security.
+
+
   - What are the risks of storing passwords in session storage?
      
      - Session storage is accessible via JavaScript, making it vulnerable to XSS attacks.
