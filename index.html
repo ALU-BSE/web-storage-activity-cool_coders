@@ -3,54 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Demo page</title>
+    <title>ShopNow Login Page</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
-    <main class="container">
-        <h1>Login</h1>
-        <form id="loginForm" class="form" novalidate>
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" 
-                       placeholder="Enter your username" 
-                       autocomplete="username" 
-                       pattern="[a-zA-Z0-9_]{3,20}"
-                       title="Username should be 3-20 characters and can contain letters, numbers, and underscores"
-                       required>
-                <div class="error-message" id="username-error"></div>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle-container">
+        <input type="checkbox" id="themeToggle" class="theme-toggle">
+        <label for="themeToggle" class="theme-toggle-label">
+            <i class="fas fa-sun" id="sunIcon"></i>
+            <i class="fas fa-moon" id="moonIcon"></i>
+        </label>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Welcome to ShopNow</h2>
+            <p>Login to access your account and start shopping.</p>
+            <form id="login-form" onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div class="create-account">
+                <a href="#">Create Account</a>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" 
-                       placeholder="Enter your password" 
-                       autocomplete="current-password"
-                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
-                       title="Password should be at least 8 characters with at least one uppercase letter, one lowercase letter, and one number"
-                       required>
-                <div class="error-message" id="password-error"></div>
-            </div>
-            <input type="hidden" id="csrfToken" name="csrfToken">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        
-        <div class="button-group">
-            <button id="logoutButton" class="btn btn-secondary" style="display:none;">Logout</button>
-            <button id="themeToggle" class="btn btn-outline">Toggle Theme</button>
         </div>
-        
-        <section class="shopping-section">
-            <button id="addToCartButton" class="btn btn-accent">Add to Cart</button>
-            <div id="cartItems" class="cart-items">
-                <!-- Cart item will be displayed here -->
-            </div>
-        </section>
-        
-        <div id="loginSuccess" class="login-success" aria-live="polite">Login Successful</div>
-    </main>
-    
+    </div>
     <script src="scripts.js"></script>
-  
+    <script src="toogle.js"></script>
 </body>
 </html>

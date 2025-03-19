@@ -1,157 +1,158 @@
-document.addEventListener("DOMContentLoaded", function () {
-    function showModal(message) {
-        const modalMessage = document.getElementById("modalMessage");
-        const modal = document.getElementById("modal");
-        const modalOverlay = document.getElementById("modalOverlay");
+// Handle login process
+function login(event) {
+    event.preventDefault();
+    // Get CSRF token from the form
+    const csrfToken = document.querySelector('input[name="csrfToken"]').value;
+    // Validate CSRF token (for demonstration purposes, we'll just log it)
+    console.log('CSRF Token:', csrfToken);
 
-        if (modalMessage && modal && modalOverlay) {
-            modalMessage.textContent = message;
-            modal.style.display = "block";
-            modalOverlay.style.display = "block";
+    // Sanitize user input
+    const username = encodeURIComponent(document.getElementById('username').value);
+    const password = encodeURIComponent(document.getElementById('password').value);
+
+    // Set cookie on login
+    const d = new Date();
+    d.setTime(d.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = "authToken=user123; " + expires + "; path=/";
+    window.location.href = 'dashboard.html';  // Redirect to the dashboard page
+}
+
+// Delete cookie on logout
+document.getElementById('logoutButton').addEventListener('click', function() {
+    document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+    window.location.href = 'index.html';  // Redirect to the login page
+});
+
+// Add item to cart
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const name = this.getAttribute('data-name');
+        const price = this.getAttribute('data-price');
+        const image = this.parentElement.querySelector('img').getAttribute('src'); // Get the image URL
+        const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        const existingItem = cart.find(item => item.name === name);
+        if (existingItem) {
+            existingItem.quantity += 1;  // Increase quantity if item already exists
+        } else {
+            cart.push({ name, price, image, quantity: 1 });  // Add new item to the cart
         }
-    }
-
-    function closeModal() {
-        document.getElementById("modal").style.display = "none";
-        document.getElementById("modalOverlay").style.display = "none";
-    }
-
-    document.getElementById("themeToggle").addEventListener("click", function () {
-        const currentTheme = document.body.classList.contains("light") ? "light" : "dark";
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        document.body.classList.remove(currentTheme);
-        document.body.classList.add(newTheme);
-        localStorage.setItem("theme", newTheme);
-    });
-
-    const savedTheme = localStorage.getItem("theme") || "light";
-    document.body.classList.add(savedTheme);
-
-    document.getElementById("addToCartButton").addEventListener("click", function () {
-        const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-        cart.push({ product: "Book", quantity: 1 });
-        sessionStorage.setItem("cart", JSON.stringify(cart));
+        sessionStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
         displayCartItems();
     });
+});
 
-    function displayCartItems() {
-        const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-        const cartItemsDiv = document.getElementById("cartItems");
-        cartItemsDiv.innerHTML = "";
-        cart.forEach((item) => {
-            const itemDiv = document.createElement("div");
-            itemDiv.textContent = `${item.product} - Quantity: ${item.quantity}`;
+// Update cart count
+function updateCartCount() {
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    document.getElementById('cartCount').textContent = cart.length;  // Update the cart item count
+}
+
+// Display cart items
+function displayCartItems() {
+    const cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const cartItemsDiv = document.getElementById('cartItems');
+    if (cartItemsDiv) {
+        cartItemsDiv.innerHTML = '';  // Clear current cart items
+        cart.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('cart-item');
+            itemDiv.innerHTML = `
+                <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <p>${encodeURIComponent(item.name)} - $${encodeURIComponent(item.price)} x ${encodeURIComponent(item.quantity)}</p>
+                </div>
+            `;
             cartItemsDiv.appendChild(itemDiv);
         });
     }
+    const checkoutButton = document.getElementById('checkoutButton');
+    if (checkoutButton) {
+        checkoutButton.style.display = cart.length > 0 ? 'block' : 'none';  // Show checkout button if cart is not empty
+    }
+}
 
+// Display cart items on page load
+window.addEventListener('load', function() {
+    updateCartCount();
     displayCartItems();
+    applyTheme();  // Apply saved theme on page load
+});
 
-    document.getElementById("csrfToken").value = Math.random().toString(36).substr(2);
+// Modal functionality
+const modal = document.getElementById('cartModal');
+const cartLink = document.getElementById('cartLink');
+const closeModal = document.getElementsByClassName('close')[0];
 
-    // Form validation functions
-    function validateUsername(username) {
-        const regex = /^[a-zA-Z0-9_]{3,20}$/;
-        if (!username.trim()) {
-            return "Username is required";
-        } else if (!regex.test(username)) {
-            return "Username must be 3-20 characters and can only contain letters, numbers, and underscores";
-        }
-        return "";
+// Open cart modal
+cartLink.onclick = function() {
+    modal.style.display = 'block';
+    displayCartItems();
+}
+
+// Close cart modal
+closeModal.onclick = function() {
+    modal.style.display = 'none';
+}
+
+// Close modal if clicked outside of it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = 'none';
     }
-    
-    function validatePassword(password) {
-        if (!password) {
-            return "Password is required";
-        } else if (password.length < 8) {
-            return "Password must be at least 8 characters";
-        } else if (!/(?=.*[a-z])/.test(password)) {
-            return "Password must contain at least one lowercase letter";
-        } else if (!/(?=.*[A-Z])/.test(password)) {
-            return "Password must contain at least one uppercase letter";
-        } else if (!/(?=.*\d)/.test(password)) {
-            return "Password must contain at least one number";
-        }
-        return "";
-    }
-    
-    // Input validation listeners
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
-    const usernameError = document.getElementById("username-error");
-    const passwordError = document.getElementById("password-error");
-    
-    usernameInput.addEventListener("input", function() {
-        usernameError.textContent = validateUsername(this.value);
-    });
-    
-    passwordInput.addEventListener("input", function() {
-        passwordError.textContent = validatePassword(this.value);
-    });
+}
 
-    document.getElementById("loginForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-        
-        // Validate on submit
-        const usernameValue = usernameInput.value;
-        const passwordValue = passwordInput.value;
-        
-        const usernameErrorMsg = validateUsername(usernameValue);
-        const passwordErrorMsg = validatePassword(passwordValue);
-        
-        usernameError.textContent = usernameErrorMsg;
-        passwordError.textContent = passwordErrorMsg;
-        
-        // If no validation errors, proceed with login
-        if (!usernameErrorMsg && !passwordErrorMsg) {
-            showModal("Login successful. Welcome, " + usernameValue + "!");
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("logoutButton").style.display = "block";
-            document.getElementById("loginSuccess").style.display = "block";
-            
-            // Store login info in localStorage
-            localStorage.setItem("loggedInUser", usernameValue);
-        }
-    });
+// Checkout button functionality
+document.getElementById('checkoutButton').addEventListener('click', function() {
+    const cartItemsDiv = document.getElementById('cartItems');
+    cartItemsDiv.innerHTML = '<p>Checkout successful!</p>';
+    sessionStorage.removeItem('cart');  // Clear cart after checkout
+    updateCartCount();
+    displayCartItems();
+});
 
-    document.getElementById("logoutButton").addEventListener("click", function () {
-        showModal("Logout successful. See you again soon!");
-        document.getElementById("loginForm").style.display = "block";
-        document.getElementById("logoutButton").style.display = "none";
-        document.getElementById("loginSuccess").style.display = "none";
-        
-        // Clear user data from localStorage
-        localStorage.removeItem("loggedInUser");
-    });
+// Theme toggle functionality
+const themeToggleButton = document.getElementById('themeToggle');
+const sunIcon = document.getElementById('sunIcon');
+const moonIcon = document.getElementById('moonIcon');
 
-    document.getElementById("modalOverlay").addEventListener("click", closeModal);
+// Change theme based on toggle
+themeToggleButton.addEventListener('change', function () {
+    // Toggle dark mode class on the body
+    document.body.classList.toggle('dark-mode');
     
-    // Check if user is already logged in
-    const loggedInUser = localStorage.getItem("loggedInUser");
-    if (loggedInUser) {
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("logoutButton").style.display = "block";
-        document.getElementById("loginSuccess").style.display = "block";
+    // Save the theme in localStorage
+    const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+
+    applyTheme(); 
+    
+    // Toggle visibility of the icons
+    if (currentTheme === 'dark') {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
     }
 });
 
-// Add to your scripts.js file
-document.addEventListener("DOMContentLoaded", function() {
-    const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
-    
-    inputs.forEach(input => {
-        // Mark as touched after user interaction
-        input.addEventListener('blur', function() {
-            if (this.value.trim() !== '') {
-                this.classList.add('touched');
-            }
-        });
-        
-        // Remove touched class when input is cleared
-        input.addEventListener('input', function() {
-            if (this.value.trim() === '') {
-                this.classList.remove('touched');
-            }
-        });
-    });
-});
+// Apply the saved theme when the page loads
+function applyTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggleButton.checked = true; // Keep the checkbox checked
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    } else {
+        document.body.classList.remove('dark-mode');
+        themeToggleButton.checked = false; // Uncheck if light theme
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    }
+}
+
+// Call applyTheme on page load to set the theme based on user preference
+window.addEventListener('load', applyTheme);
