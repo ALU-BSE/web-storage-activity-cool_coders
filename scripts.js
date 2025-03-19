@@ -49,20 +49,109 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("csrfToken").value = Math.random().toString(36).substr(2);
 
+    // Form validation functions
+    function validateUsername(username) {
+        const regex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!username.trim()) {
+            return "Username is required";
+        } else if (!regex.test(username)) {
+            return "Username must be 3-20 characters and can only contain letters, numbers, and underscores";
+        }
+        return "";
+    }
+    
+    function validatePassword(password) {
+        if (!password) {
+            return "Password is required";
+        } else if (password.length < 8) {
+            return "Password must be at least 8 characters";
+        } else if (!/(?=.*[a-z])/.test(password)) {
+            return "Password must contain at least one lowercase letter";
+        } else if (!/(?=.*[A-Z])/.test(password)) {
+            return "Password must contain at least one uppercase letter";
+        } else if (!/(?=.*\d)/.test(password)) {
+            return "Password must contain at least one number";
+        }
+        return "";
+    }
+    
+    // Input validation listeners
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const usernameError = document.getElementById("username-error");
+    const passwordError = document.getElementById("password-error");
+    
+    usernameInput.addEventListener("input", function() {
+        usernameError.textContent = validateUsername(this.value);
+    });
+    
+    passwordInput.addEventListener("input", function() {
+        passwordError.textContent = validatePassword(this.value);
+    });
+
     document.getElementById("loginForm").addEventListener("submit", function (event) {
         event.preventDefault();
-        showModal("Login attempt made. Secure authentication should be handled on the server.");
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("logoutButton").style.display = "block";
-        document.getElementById("loginSuccess").style.display = "block";
+        
+        // Validate on submit
+        const usernameValue = usernameInput.value;
+        const passwordValue = passwordInput.value;
+        
+        const usernameErrorMsg = validateUsername(usernameValue);
+        const passwordErrorMsg = validatePassword(passwordValue);
+        
+        usernameError.textContent = usernameErrorMsg;
+        passwordError.textContent = passwordErrorMsg;
+        
+        // If no validation errors, proceed with login
+        if (!usernameErrorMsg && !passwordErrorMsg) {
+            showModal("Login successful. Welcome, " + usernameValue + "!");
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("logoutButton").style.display = "block";
+            document.getElementById("loginSuccess").style.display = "block";
+            
+            // Store login info in localStorage
+            localStorage.setItem("loggedInUser", usernameValue);
+        }
     });
 
     document.getElementById("logoutButton").addEventListener("click", function () {
-        showModal("Logout request made. Server should clear the authentication cookie.");
+        showModal("Logout successful. See you again soon!");
         document.getElementById("loginForm").style.display = "block";
         document.getElementById("logoutButton").style.display = "none";
         document.getElementById("loginSuccess").style.display = "none";
+        
+        // Clear user data from localStorage
+        localStorage.removeItem("loggedInUser");
     });
 
     document.getElementById("modalOverlay").addEventListener("click", closeModal);
+    
+    // Check if user is already logged in
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("logoutButton").style.display = "block";
+        document.getElementById("loginSuccess").style.display = "block";
+    }
+});
+
+// Add to your scripts.js file
+document.addEventListener("DOMContentLoaded", function() {
+    const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+    
+    inputs.forEach(input => {
+        // Mark as touched after user interaction
+        input.addEventListener('blur', function() {
+            if (this.value.trim() !== '') {
+                this.classList.add('touched');
+            }
+        });
+        
+        // Remove touched class when input is cleared
+        input.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                this.classList.remove('touched');
+            }
+        });
+    });
 });
