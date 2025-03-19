@@ -14,6 +14,8 @@
   - Secure ensures that the cookie is only sent over HTTPS, preventing transmission over unencrypted connections, which helps prevent man-in-the-middle attacks.
   - Use of secure flag means that attackers using packet sniffing tools won’t be able to intercept Secure cookies on HTTPS connections. 
   - HttpOnly prevents client-side access to cookies, reducing XSS risks, while Secure ensures cookies are sent only over HTTPS. Together, they enhance session security and user privacy.
+  - The HttpOnly and Secure flags are essential for enhancing security when handling cookies in web applications 
+ 
 
 - How do session cookies differ from persistent cookies in this context?
 
@@ -22,6 +24,7 @@
   - Session cookies have a lower risk of theft as they disappear on browser close, while persistent cookies can be stolen if improperly secured.
   - Session cookies are best for authentication, while persistent cookies should not store authentication data.
   - Session cookies exist only during a browsing session and are ideal for temporary data like login states. while Persistent cookies remain on the device after the session ends, enabling long-term tracking and preference storage.
+  - Session cookies are preferred for security-sensitive applications while persistent cookies should never store sensitive authentication data, as they can be accessed even after the browser is closed
 ---
 
 ### **Task 2: Theme Preferences with Local Storage**  
@@ -44,7 +47,7 @@
    Manually delete old entries (e.g., using timestamps).
    Use Least Recently Used (LRU) strategy to remove the oldest data first.
 
-  -Store only essential data by avoiding redundant or excessive information to prevent hitting the limit.
+  -Store only essential data by avoiding redundant or excessive information to prevent hitting the limits.
    
 ---
 
@@ -60,7 +63,7 @@
    - Session Storage is ideal because it persists only as long as the browser session is open, meaning the shopping cart resets when the browser is closed.
    - The cart resets when the browser is closed, which is useful for temporary selections.
   - Prevents unnecessary data buildup, ensuring the cart remains relevant only during the active session.
--
+- Since session storage data is cleared when the browser is closed, it reduces the risk of unauthorized access to cart information, especially on shared or public computers.
 
 ### **Task 4: Security Implementation**  
 
