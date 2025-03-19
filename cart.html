@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Shopping Cart</h1>
+            <div class="cart-icon">
+                <a href="dashboard.html">Back to Dashboard</a>
+            </div>
+        </div>
+    </header>
+    <div class="cart-container">
+        <h2>Your Cart</h2>
+        <div id="cartItems" class="cart-items"></div>
+        <button id="checkoutButton" class="btn">Checkout</button>
+    </div>
+    <script src="scripts.js"></script>
+    <script>
+        // Generate CSRF token and add it to the form
+        const csrfToken = Math.random().toString(36).substr(2);
+        document.querySelectorAll('form').forEach(form => {
+            form.innerHTML += `<input type="hidden" name="csrfToken" value="${csrfToken}">`;
+        });
+    </script>
+</body>
+</html>
